@@ -1,0 +1,16 @@
+services:
+  md-to-html:
+    image: grantalbright/md-to-html:latest
+    build:
+      context: ./app/
+      dockerfile: dockerfile
+    container_name: docker-md-to-html
+    restart: unless-stopped
+    develop:
+      watch:
+        - path: ./app/main.go
+          action: sync+restart
+          target: /go/src/app
+    volumes:
+      - "./test/md:/app/md"
+      - "./test/html/:/app/html"

@@ -1,0 +1,30 @@
+ARG UPSTREAM_VERSION=1.90.0
+
+# The build stage
+FROM golang:1.25-bookworm as builder
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o go-md-to-html /app/main.go
+
+FROM scratch
+ARG BRANCH
+ARG COMMIT
+ARG DATE
+ARG URL
+ARG VERSION
+
+LABEL org.label-schema.schema-version="0.1" \
+	org.label-schema.build-date=$DATE \
+	org.label-schema.vendor="Phos Site LLC" \
+	org.label-schema.name="grant-albright/docker-md-to-html" \
+	org.label-schema.description="Converts markdown files into html automatically by watching a folder." \
+	org.label-schema.url="https://github.com/grant-albright/docker-md-to-html" \
+	org.label-schema.docker.cmd="docker run -v $PWD/md:/md/ -v $PWD/html:/html/ --init -it grant-albright/docker-md-to-html:release" \
+	org.label-schema.version="$VERSION" \
+	org.label-schema.vcs-url=$URL \
+	org.label-schema.vcs-branch=$BRANCH \
+	org.label-schema.vcs-ref=$COMMIT
+
+WORKDIR /app
+COPY --from=builder /app/go-md-to-html .
+CMD ["./go-md-to-html"]
