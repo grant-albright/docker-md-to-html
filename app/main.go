@@ -12,13 +12,6 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 )
 
-var mds = `# header
-
-Sample text.
-
-[link](http://example.com)
-`
-
 func mdToHTML(md []byte) []byte {
 	// create markdown parser with extensions
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
@@ -31,9 +24,6 @@ func mdToHTML(md []byte) []byte {
 	renderer := html.NewRenderer(opts)
 
 	return markdown.Render(doc, renderer)
-}
-func WriteToFile(filepath string, data []byte) {
-
 }
 
 func FileExists(filepath string) bool {
@@ -65,12 +55,19 @@ func mdToHtmlFull(filepath string) {
 	}
 
 	// Convert to HTML
-	html := mdToHTML(b)
+	var html_result []byte = nil
+	parts := strings.Split(string(b), "-----")
+	if len(parts) >= 3 {
+		content := parts[2]
+		html_result = mdToHTML([]byte(content))
+	} else {
+		html_result = mdToHTML(b)
+	}
 
 	filename := strings.TrimSuffix(path.Base(filepath), path.Ext(filepath))
 	target_filepath := "./html/" + filename + ".html"
 	// Save to html
-	os.WriteFile(target_filepath, html, 0777)
+	os.WriteFile(target_filepath, html_result, 0777)
 	log.Println("Converted", path.Base(filepath), "to html.")
 }
 

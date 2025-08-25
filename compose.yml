@@ -1,6 +1,6 @@
 services:
   md-to-html:
-    image: grantalbright/md-to-html:latest
+    image: grantalbright/markdown-to-html-watcher:latest
     build:
       context: ./app/
       dockerfile: dockerfile
